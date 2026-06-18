@@ -106,25 +106,25 @@ function LoginScreen() {
         <div className="absolute top-1/3 -left-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
           style={{ background: `${BLUE}18` }} />
 
-        {/* Top — brand */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <LogoMark size={44} />
-            <span className="text-[1.35rem] font-black tracking-tight text-white">
-              MediTrack<span style={{ color: BLUE }}>Ug</span>
-            </span>
-          </div>
+       {/* Top — brand */}
+<div className="relative z-10">
+  <div className="flex items-center gap-3 mb-16">
+    <LogoMark size={44} />
+    <span className="text-[1.35rem] font-black tracking-tight text-white">
+      MediTrack<span style={{ color: BLUE }}>Ug</span>
+    </span>
+  </div>
 
-          <h1 className="text-[2.6rem] font-black leading-[1.1] tracking-[-0.03em] text-white mb-5">
-            Clinic management<br />
-            built for<br />
-            <span style={{ color: BLUE }}>Uganda.</span>
-          </h1>
-          <p className="text-white/50 text-[1rem] leading-[1.75] max-w-sm">
-            Real-time patient tracking, lab results, and daily reporting — no servers, no paper, no guesswork.
-          </p>
-        </div>
+  <h1 className="text-[2.6rem] font-black leading-[1.1] tracking-[-0.03em] text-white mb-5">
+    Eye hospital management<br />
+    built for<br />
+    <span style={{ color: BLUE }}>Uganda.</span>
+  </h1>
 
+  <p className="text-white/50 text-[1rem] leading-[1.75] max-w-sm">
+    Real-time patient records, eye clinic workflows, lab results, and reporting — all in one system. No paper. No delays. No confusion.
+  </p>
+</div>
         {/* Middle — trust signals */}
         <div className="relative z-10 space-y-4 my-10">
           {TRUST.map(({ icon, text }) => (
