@@ -13,6 +13,7 @@ import { format } from "date-fns";
 
 const SEND_TO_OPTIONS = [
   { value: "observations",  label: "Observations",    icon: "🩺" },  // ← default first stop
+  { value: "visual_acuity", label: "Visual Acuity",   icon: "👁️" },
   { value: "consultation",  label: "Doctor",          icon: "👨‍⚕️" },
   { value: "lab",           label: "Lab",             icon: "🔬" },
   { value: "pharmacy",      label: "Pharmacy",        icon: "💊" },
