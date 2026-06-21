@@ -12,6 +12,9 @@ import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import Observations from "./pages/Observations";
 import VisualAcuity from "./pages/VisualAcuity";
 import OpticalShop  from "./pages/OpticalShop";
+import MaleWard from "./pages/MaleWard";
+import FemaleWard from "./pages/FemaleWard";
+import OperatingTheatre from "./pages/OperatingTheatre";
 
 /* ─── Brand constants ─── */
 const NAVY   = "#0D2C6E";
@@ -322,25 +325,57 @@ function LoginScreen() {
 ═══════════════════════════════════════════ */
 function NavBar({ userProfile, onSignOut, currentPage, setCurrentPage }) {
   const role = userProfile?.role;
+  const scrollRef = useRef(null);
+  const [showLeftFade,  setShowLeftFade]  = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
 
   const navItems = [
-  { id: "reception",     label: "Reception",     icon: "🏥", roles: ["admin", "reception"] },
-  { id: "observations",  label: "Observations",  icon: "🩺", roles: ["admin", "reception"] },
-  { id: "visual_acuity", label: "Visual Acuity", icon: "👁",  roles: ["admin", "reception"] },
-  { id: "consultation",  label: "Doctor",        icon: "👨‍⚕️", roles: ["admin", "doctor"] },
-  { id: "lab",           label: "Lab",           icon: "🔬", roles: ["admin", "lab"] },
-  { id: "optical",       label: "Optical",       icon: "👓", roles: ["admin", "optical"] },
-  { id: "pharmacy",      label: "Pharmacy",      icon: "💊", roles: ["admin", "pharmacy"] },
-  { id: "billing",       label: "Billing",       icon: "💳", roles: ["admin", "billing"] },
-  { id: "dashboard",     label: "Dashboard",     icon: "📊", roles: ["admin"] },
-    
+    { id: "reception",     label: "Reception",         icon: "🏥", roles: ["admin", "reception"] },
+    { id: "observations",  label: "Observations",      icon: "🩺", roles: ["admin", "reception"] },
+    { id: "visual_acuity", label: "Visual Acuity",     icon: "👁",  roles: ["admin", "reception"] },
+    { id: "consultation",  label: "Doctor",            icon: "👨‍⚕️", roles: ["admin", "doctor"] },
+    { id: "lab",           label: "Lab",               icon: "🔬", roles: ["admin", "lab"] },
+    { id: "male_ward",     label: "Male Ward",         icon: "🛏️", roles: ["admin", "doctor", "ward_male"] },
+    { id: "female_ward",   label: "Female Ward",       icon: "🛏️", roles: ["admin", "doctor", "ward_female"] },
+    { id: "ot",            label: "Operating Theatre", icon: "🔪", roles: ["admin", "doctor", "ot"] },
+    { id: "optical",       label: "Optical",           icon: "👓", roles: ["admin", "optical"] },
+    { id: "pharmacy",      label: "Pharmacy",          icon: "💊", roles: ["admin", "pharmacy"] },
+    { id: "billing",       label: "Billing",           icon: "💳", roles: ["admin", "billing"] },
+    { id: "dashboard",     label: "Dashboard",         icon: "📊", roles: ["admin"] },
   ].filter((item) => item.roles.includes(role));
+
+  const updateFades = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowLeftFade(el.scrollLeft > 4);
+    setShowRightFade(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateFades();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateFades, { passive: true });
+    window.addEventListener("resize", updateFades);
+    return () => {
+      el.removeEventListener("scroll", updateFades);
+      window.removeEventListener("resize", updateFades);
+    };
+  }, [navItems.length]);
+
+  // Keep the active tab scrolled into view when it changes
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector(`[data-navid="${currentPage}"]`);
+    activeBtn?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [currentPage]);
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="flex items-center justify-between px-4 py-3">
-        {/* Brand */}
-        <div className="flex items-center gap-2.5">
+      {/* Top row: brand + user chip + sign out — always uncrowded */}
+      <div className="flex items-center justify-between px-4 py-2.5 gap-3">
+        <div className="flex items-center gap-2.5 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: NAVY }}>
             <svg width="18" height="18" viewBox="0 0 80 80" fill="none">
               <rect x="16" y="38" width="10" height="26" rx="3" fill="white"/>
@@ -353,69 +388,69 @@ function NavBar({ userProfile, onSignOut, currentPage, setCurrentPage }) {
               <rect x="30" y="18" width="20" height="8" rx="3" fill={BLUE}/>
             </svg>
           </div>
-          <span className="font-extrabold text-sm tracking-tight" style={{ color: NAVY }}>
+          <span className="font-extrabold text-sm tracking-tight hidden sm:inline" style={{ color: NAVY }}>
             MediTrack<span style={{ color: BLUE }}>Ug</span>
           </span>
         </div>
 
-        {/* Desktop nav */}
-        <div className="flex items-center gap-1">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setCurrentPage(item.id)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                currentPage === item.id
-                  ? "text-white"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              style={currentPage === item.id ? { background: NAVY } : {}}
-            >
-              <span className="hidden sm:inline">{item.label}</span>
-              <span className="sm:hidden">{item.icon}</span>
-            </button>
-          ))}
-
-          {/* User chip + signout */}
-          <div className="flex items-center gap-1 ml-3 pl-3 border-l border-gray-200">
-            <div className="hidden sm:flex items-center gap-2 px-2">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-bold text-white"
-                style={{ background: BLUE }}>
-                {userProfile?.name?.[0] ?? "U"}
-              </div>
-              <span className="text-[0.78rem] font-medium text-gray-600 max-w-[100px] truncate">
-                {userProfile?.name}
-              </span>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="hidden sm:flex items-center gap-2 px-2">
+            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[0.6rem] font-bold text-white"
+              style={{ background: BLUE }}>
+              {userProfile?.name?.[0] ?? "U"}
             </div>
-            <button
-              onClick={onSignOut}
-              className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Sign out"
-            >
-              <svg className="w-4.5 h-4.5" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
+            <span className="text-[0.78rem] font-medium text-gray-600 max-w-[100px] truncate">
+              {userProfile?.name}
+            </span>
           </div>
+          <button
+            onClick={onSignOut}
+            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Sign out"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Mobile tab bar */}
-      <div className="flex border-t border-gray-100 sm:hidden overflow-x-auto">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setCurrentPage(item.id)}
-            className="flex-1 py-2 text-xs font-medium transition-colors whitespace-nowrap px-1"
-            style={{
-              color: currentPage === item.id ? BLUE : "#6b7280",
-              borderBottom: currentPage === item.id ? `2px solid ${BLUE}` : "2px solid transparent",
-            }}
-          >
-            {item.icon} {item.label}
-          </button>
-        ))}
+      {/* Tab strip: own horizontally-scrolling row, same pattern on every breakpoint */}
+      <div className="relative border-t border-gray-100">
+        {showLeftFade && (
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10"
+            style={{ background: "linear-gradient(90deg, white, transparent)" }} />
+        )}
+        {showRightFade && (
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10"
+            style={{ background: "linear-gradient(270deg, white, transparent)" }} />
+        )}
+
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto px-2"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {navItems.map((item) => {
+            const active = currentPage === item.id;
+            return (
+              <button
+                key={item.id}
+                data-navid={item.id}
+                onClick={() => setCurrentPage(item.id)}
+                className="flex items-center gap-1.5 px-3 py-2.5 text-[0.8rem] font-medium whitespace-nowrap transition-colors flex-shrink-0"
+                style={{
+                  color: active ? BLUE : "#6b7280",
+                  borderBottom: active ? `2.5px solid ${BLUE}` : "2.5px solid transparent",
+                }}
+              >
+                <span className="text-[0.85rem]">{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
@@ -514,6 +549,9 @@ export default function App() {
         {currentPage === "visual_acuity" && <VisualAcuity clinicId={clinicId} userProfile={userProfile} />}
         {currentPage === "consultation" && <Consultation clinicId={clinicId} userProfile={userProfile} />}
         {currentPage === "lab"          && <LabPage      clinicId={clinicId} userProfile={userProfile} />}
+        {currentPage === "male_ward"    && <MaleWard         clinicId={clinicId} userProfile={userProfile} />}
+        {currentPage === "female_ward"  && <FemaleWard       clinicId={clinicId} userProfile={userProfile} />}
+        {currentPage === "ot"           && <OperatingTheatre clinicId={clinicId} userProfile={userProfile} />}
         {currentPage === "pharmacy"     && <Pharmacy     clinicId={clinicId} userProfile={userProfile} />}
         {currentPage === "optical"    && <OpticalShop    clinicId={clinicId} userProfile={userProfile} />}
         {currentPage === "billing"      && <Billing      clinicId={clinicId} userProfile={userProfile} />}
